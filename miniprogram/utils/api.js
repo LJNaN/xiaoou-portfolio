@@ -33,6 +33,8 @@ function fetchContent() {
         }
       },
       fail(err) {
+        // 排查真机请求失败用：把确切的 errMsg 打出来（真机调试时在 PC 的 console 里看）
+        console.error('[portfolio] 请求失败', `${API}/content`, err && err.errMsg, JSON.stringify(err));
         reject(new Error(err.errMsg || '网络异常'));
       },
     });

@@ -108,12 +108,14 @@ rsync 不会删除被 exclude 的路径，一旦漏写，下一次部署的 `--d
 
 ## 还没做的（需要你提供）
 
-- **AppID**：`miniprogram/project.config.json` 里现在是占位符 `touristappid`，
-  没有正式 AppID 不能真机预览、不能上传体验版。
+- **域名 ICP 备案**：`www.jnnnn.top` 备案没下来之前，**真机一定连不上** ——
+  阿里云会按 SNI 把带域名的连接直接重置（`ERR_CONNECTION_RESET`），
+  `http://` 则返回 `Non-compliance ICP Filing` 的 403 页。这不是代码问题：
+  同一个 IP 不带 SNI 访问端口 443 是 200。备案通过后无需改任何代码。
+  等待期间真机调试把 `config/index.js` 的 `ENV` 改成 `'ip'`（裸 IP 直连）并勾「不校验合法域名」。
 - **服务器域名白名单**：小程序后台「开发 → 开发设置 → 服务器域名」，
   把 `https://www.jnnnn.top` 加进 **request 合法域名** 和 **downloadFile 合法域名**
   （后者是「保存到相册」要用的）。白名单是精确匹配，`www.` 不能省也不能多。
-  正式版要求域名已 ICP 备案。
 - **微信号名片**：按你的要求先不做了，页面上只留一个「复制微信」按钮。
 
 ## 排错
