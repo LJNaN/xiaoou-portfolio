@@ -1,0 +1,33 @@
+{
+  "categories": [
+    { "id": "poster",    "index": "01", "name": "海报长图设计", "en": "Long Poster Design",       "color": "#4A1E8C" },
+    { "id": "ip",        "index": "02", "name": "IP延展设计",   "en": "IP Extension Design",      "color": "#F2EFA9" },
+    { "id": "event",     "index": "03", "name": "活动物料设计", "en": "Event Collateral Design",  "color": "#E9E9E9" },
+    { "id": "packaging", "index": "04", "name": "产品包装设计", "en": "Product Packaging Design", "color": "#D8CBEC" }
+  ],
+  "pages": [
+    { "id": "01", "file": "1.jpg",  "role": "cover",    "title": "平面设计作品集", "subtitle": "DESIGN PORTFOLIO · 2020—2026" },
+    { "id": "02", "file": "2.jpg",  "role": "about",    "title": "关于我",         "subtitle": "About Me" },
+    { "id": "03", "file": "3.jpg",  "role": "contents", "title": "目录",           "subtitle": "Our Contents" },
+
+    { "id": "04", "file": "4.jpg",  "role": "work", "category": "poster", "title": "平面海报 — 长安启源", "note": "长图设计 · 全系车型营销海报" },
+    { "id": "05", "file": "5.jpg",  "role": "work", "category": "poster", "title": "平面海报 — 长安欧尚", "note": "节令与主题系列海报" },
+    { "id": "06", "file": "6.jpg",  "role": "work", "category": "poster", "title": "平面海报 — 长图",     "note": "活动与促销长图设计" },
+    { "id": "07", "file": "7.jpg",  "role": "work", "category": "poster", "title": "平面海报 — 促销类",   "note": "购车政策与让利视觉" },
+    { "id": "08", "file": "8.jpg",  "role": "work", "category": "poster", "title": "平面海报 — 创意草图", "note": "KV 草图与海报草图手绘推演" },
+
+    { "id": "09", "file": "9.jpg",  "role": "work", "category": "ip", "title": "IP 形象 — 表情包",   "note": "长安启源 / 长安凯程 表情包（含动图）" },
+    { "id": "10", "file": "10.jpg", "role": "work", "category": "ip", "title": "IP 形象 — 食品包装", "note": "腊上瘾 小猪 IP 形象与包装延展" },
+
+    { "id": "11", "file": "11.jpg", "role": "work", "category": "event", "title": "活动物料 — 启源家年华",             "note": "线下活动视觉全景 · 海报、现场立牌、打卡装置、传播长图" },
+    { "id": "12", "file": "12.jpg", "role": "work", "category": "event", "title": "活动物料 — 深蓝汽车 & 旺旺 高考活动", "note": "助考送考公益 · 手举牌、手提袋、海报、现场效果图" },
+    { "id": "13", "file": "13.jpg", "role": "work", "category": "event", "title": "活动物料 — 启源民勤种树活动",         "note": "沙漠锁边行动 · 招募/倒计时/分享海报、手举牌" },
+    { "id": "14", "file": "14.jpg", "role": "work", "category": "event", "title": "活动物料 — 全新 QQ3 预售活动",        "note": "预售与交付 KV、倒计时海报、直播物料、红点获奖海报" },
+    { "id": "15", "file": "15.jpg", "role": "work", "category": "event", "title": "活动物料 — 奇瑞 QQ3 七月活动",        "note": "主视觉、单页配置表、广告机横幅、道旗、车顶牌" },
+
+    { "id": "16", "file": "16.jpg", "role": "work", "category": "packaging", "title": "包装设计 — 外用保健产品", "note": "上工御品 · 包装与场景效果图" },
+    { "id": "17", "file": "17.jpg", "role": "work", "category": "packaging", "title": "包装设计 — 护肤产品",     "note": "素绽雪 SOFACERY · 包装与场景效果图" },
+
+    { "id": "18", "file": "18.jpg", "role": "end", "title": "谢谢观看", "subtitle": "THANKS" }
+  ]
+}

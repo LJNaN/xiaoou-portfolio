@@ -1,0 +1,42 @@
+services:
+  # 作品集后端：只提供内容清单和图片，挂在 gateway 后面，自己不碰宿主机的 80/443。
+  #
+  # 不在 compose 里 depends_on 网关，也不用取决于网关在不在 —— 由 gateway 那条
+  # 「变量形式 proxy_pass + Docker 内置 DNS」按请求解析，这边没起只会让它那两条路径 502。
+  api:
+    build: ./server
+    container_name: xiaoou-api
+    restart: unless-stopped
+    environment:
+      - PORT=5003
+      - THUMB_WIDTH=750
+    volumes:
+      # 图片只在服务器上（不进 git），原图和自动生成的缩略图都落在这里
+      - ./server/images:/data/images
+      # 清单进 git，由 CI 同步过来，容器只读
+      - ./server/content:/data/content:ro
+    expose:
+      - "5003"
+    # 只绑回环：对外一律经网关，这个端口仅用于在服务器上 curl 自查
+    ports:
+      - "127.0.0.1:5003:5003"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request;urllib.request.urlopen('http://127.0.0.1:5003/portfolio-api/health')
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      default:
+      web:
+        aliases:
+          - xiaoou-api
+
+networks:
+  # 与 gateway 共享的外部网络，首次需在服务器上 docker network create web
+  web:
+    external: true

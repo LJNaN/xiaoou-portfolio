@@ -1,0 +1,13 @@
+page {
+  background: #ffffff;
+  color: #111111;
+  font-size: 28rpx;
+  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue',
+    'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+image {
+  display: block;
+}

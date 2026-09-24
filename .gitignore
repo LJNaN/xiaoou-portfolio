@@ -1,0 +1,16 @@
+.claude/
+
+# 作品集图片只在服务器上（bind mount 进容器），不进仓库。
+# CI 的 rsync 必须带 --exclude='server/images'，否则 --delete 会把服务器上仅有的那一份删掉。
+server/images/
+
+# 微信开发者工具的本地私有配置（含本机路径/编译设置）
+project.private.config.json
+
+# 本地跑后端用的虚拟环境
+server/.venv/
+__pycache__/
+
+# OS 文件
+.DS_Store
+Thumbs.db

@@ -1,0 +1,164 @@
+<view class="page" style="padding-top:{{navTotal}}px">
+
+  <!-- ── 加载态 ───────────────────────────────────────────── -->
+  <view class="placeholder" wx:if="{{!ready}}">
+    <view class="placeholder__text">{{error ? '内容加载失败，检查一下网络或接口地址' : '加载中…'}}</view>
+    <view class="placeholder__retry" wx:if="{{error}}" bindtap="onRetry">重试</view>
+  </view>
+
+  <block wx:else>
+
+    <!-- ── 封面 + 名片 ───────────────────────────────────── -->
+    <image
+      class="hero__img"
+      src="{{cover.thumb}}"
+      style="height:{{cover.boxH}}rpx"
+      mode="widthFix"
+      bindtap="onPreview"
+      data-full="{{cover.full}}"
+    />
+
+    <view class="profile">
+      <view class="profile__name">{{profile.name}}</view>
+      <view class="profile__title">{{profile.title}} · 求职意向 {{profile.intent}}</view>
+      <view class="profile__meta">{{profile.school}} · {{profile.education}} · {{profile.experience}}</view>
+      <view class="actions">
+        <view class="action" bindtap="onCall">打电话</view>
+        <view class="action" bindtap="onCopyEmail">复制邮箱</view>
+        <view class="action action--primary" bindtap="onCopyWechat">复制微信</view>
+      </view>
+    </view>
+
+    <!-- ── 简历 ─────────────────────────────────────────── -->
+    <view class="section">
+      <view class="section__head">
+        <text class="section__title">简历</text>
+        <text class="section__en">RESUME</text>
+      </view>
+
+      <view class="resume">
+        <view class="resume__block">
+          <view class="resume__label">个人介绍</view>
+          <text class="resume__text">{{profile.summary}}</text>
+        </view>
+
+        <view class="resume__block">
+          <view class="resume__label">技能</view>
+          <view class="tags">
+            <text class="tag" wx:for="{{profile.skills}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="tags">
+            <text class="tag tag--soft" wx:for="{{profile.software}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+
+        <view class="resume__block">
+          <view class="resume__label">工作经历</view>
+          <view class="job" wx:for="{{profile.jobs}}" wx:key="company">
+            <view class="job__period">{{item.period}}</view>
+            <view class="job__line">
+              <text class="job__company">{{item.company}}</text>
+              <text class="job__role">{{item.role}}</text>
+            </view>
+            <text class="job__desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 简历原图：竖版 A4，点开可放大看原始排版 -->
+    <image
+      class="resume-img"
+      wx:if="{{resume}}"
+      src="{{resume.thumb}}"
+      style="height:{{resume.boxH}}rpx"
+      mode="widthFix"
+      lazy-load
+      bindtap="onPreview"
+      data-full="{{resume.full}}"
+    />
+    <view class="resume-img__hint" wx:if="{{resume}}">简历原图 · 点击放大 · 可保存到相册</view>
+
+    <!-- ── 作品集 ───────────────────────────────────────── -->
+    <view class="gallery">
+      <view class="gallery__head">
+        <view class="gallery__title">作品集</view>
+        <view class="gallery__en">DESIGN PORTFOLIO · 2020—2026</view>
+      </view>
+
+      <!-- 画册按顺序竖排；每章第一张作品前插一条色块标题条 -->
+      <block wx:for="{{blocks}}" wx:key="key">
+        <view
+          class="chapter"
+          wx:if="{{item.type === 'chapter'}}"
+          style="background:{{item.color}};color:{{item.textColor}}"
+        >
+          <view class="chapter__index">{{item.index}}</view>
+          <view class="chapter__names">
+            <view class="chapter__name">{{item.name}}</view>
+            <view class="chapter__en">{{item.en}}</view>
+          </view>
+        </view>
+
+        <view class="sheet" wx:else>
+          <image
+            class="sheet__img"
+            src="{{item.thumb}}"
+            style="height:{{item.boxH}}rpx"
+            mode="widthFix"
+            lazy-load
+            bindtap="onPreview"
+            data-full="{{item.full}}"
+          />
+          <view class="sheet__caption">
+            <text class="sheet__no">{{item.id}}</text>
+            <view class="sheet__body">
+              <text class="sheet__title">{{item.title}}</text>
+              <text class="sheet__note" wx:if="{{item.note}}">{{item.note}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- ── 联系 ─────────────────────────────────────────── -->
+    <view class="footer">
+      <view class="footer__title">联系我</view>
+
+      <view class="footer__row" bindtap="onCopyWechat">
+        <text class="footer__row-label">微信</text>
+        <text class="footer__row-value">{{profile.wechat}}</text>
+      </view>
+
+      <view class="footer__row" bindtap="onCall">
+        <text class="footer__row-label">电话</text>
+        <text class="footer__row-value">{{profile.phone}}</text>
+      </view>
+
+      <view class="footer__row" bindtap="onCopyEmail">
+        <text class="footer__row-label">邮箱</text>
+        <text class="footer__row-value">{{profile.email}}</text>
+      </view>
+
+      <view class="footer__copy">© 2026 {{profile.name}} · {{profile.title}}</view>
+    </view>
+
+  </block>
+</view>
+
+<!-- ── 自定义导航栏：初始透明，滚动后淡入毛玻璃 + 标题 ──────── -->
+<view class="navbar {{navSolid ? 'is-solid' : ''}}" style="height:{{navTotal}}px;padding-top:{{statusBarHeight}}px">
+  <view class="navbar__inner" style="height:{{navHeight}}px">
+    <text class="navbar__title">{{profile.name}} · 作品集</text>
+  </view>
+</view>
+
+<!-- 滚动进度：贴在导航栏下沿 -->
+<view class="progress" style="top:{{navTotal}}px">
+  <view class="progress__bar" style="width:{{progress}}%"></view>
+</view>
+
+<!-- ── 回到顶部 ─────────────────────────────────────────── -->
+<view class="totop {{showTop ? 'is-show' : ''}}" bindtap="onBackTop">
+  <view class="totop__arrow"></view>
+</view>

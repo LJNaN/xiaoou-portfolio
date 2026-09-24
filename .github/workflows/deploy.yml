@@ -1,0 +1,57 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Ensure target directory exists
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /app/xiaoou-portfolio"
+
+      # rsync 传的是工作区文件（不只是 git 跟踪的文件），所以要把本机才有、
+      # 服务器上不该有的东西都排掉，否则 .venv 几百兆也会跟着上去。
+      #
+      # --exclude='server/images' 是关键：19 张原图不在 git 里，服务器上那份是唯一一份。
+      # rsync 不会删除被 exclude 的路径，漏写这一条的话，下一次部署 --delete
+      # 就会把服务器上的原图全删掉（接口照常返回、图片全 404）。
+      #
+      # --exclude='miniprogram'：小程序源码只在本地和开发者工具里用，服务器不需要。
+      - name: Sync files via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.claude' \
+            --exclude='miniprogram' \
+            --exclude='server/images' \
+            --exclude='server/.venv' \
+            --exclude='__pycache__' \
+            -e 'ssh -o ServerAliveInterval=30' \
+            ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/app/xiaoou-portfolio/
+
+      - name: Docker compose deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /app/xiaoou-portfolio
+            docker network create web 2>/dev/null || true
+            # --build 是必须的：代码是 COPY 进镜像的，只 `up -d` 会继续跑旧代码。
+            # images/ 和 content/ 是目录 bind mount，不走镜像，改内容不用重建。
+            docker compose up -d --build
