@@ -7,7 +7,7 @@ const ENV = 'prod';
 
 const BASE = {
   dev: 'http://127.0.0.1:5003',
-  prod: 'https://www.liujn.fun',
+  prod: 'https://www.jnnnn.top',
 }[ENV];
 
 module.exports = {
