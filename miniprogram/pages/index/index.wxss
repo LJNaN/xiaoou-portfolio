@@ -12,6 +12,9 @@
   z-index: 100;
   background: transparent;
   transition: background-color 0.24s ease, box-shadow 0.24s ease;
+  /* 没有这行的话 content-box 会把 padding-top 再加到 height 上，
+     状态栏高度被算两遍，滚动变实以后白条会高出一整条状态栏 */
+  box-sizing: border-box;
 }
 
 .navbar.is-solid {
@@ -366,6 +369,27 @@
 .footer__row-value {
   font-size: 26rpx;
   color: #333333;
+}
+
+.qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 44rpx 32rpx 30rpx;
+  border-radius: 20rpx;
+  background: #ffffff;
+}
+
+.qr__img {
+  width: 380rpx;
+  border-radius: 12rpx;
+}
+
+.qr__hint {
+  margin-top: 24rpx;
+  font-size: 22rpx;
+  color: #b0b0b8;
 }
 
 .footer__copy {

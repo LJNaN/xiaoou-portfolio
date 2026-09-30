@@ -9,10 +9,15 @@
   <block wx:else>
 
     <!-- ── 封面 + 名片 ───────────────────────────────────── -->
+    <!-- 封面顶部留了一段纯背景，margin-top 拉的是 navTotal 本身，跟 .page 的
+         padding-top 抵消，图顶永远停在 y=0（垫到状态栏、导航栏底下），
+         封面文字在哪台机器上都落在距屏顶同一高度。
+         图里那段背景占宽度 31%（≈234rpx），比最高的导航区（≈190rpx）还高，
+         多余的部分裁在屏幕外，不会顶到文字 -->
     <image
       class="hero__img"
       src="{{cover.thumb}}"
-      style="height:{{cover.boxH}}rpx"
+      style="height:{{cover.boxH}}rpx;margin-top:-{{navTotal}}px"
       mode="widthFix"
       bindtap="onPreview"
       data-full="{{cover.full}}"
@@ -25,7 +30,7 @@
       <view class="actions">
         <view class="action" bindtap="onCall">打电话</view>
         <view class="action" bindtap="onCopyEmail">复制邮箱</view>
-        <view class="action action--primary" bindtap="onCopyWechat">复制微信</view>
+        <view class="action action--primary" bindtap="onShowWechatQr">加微信</view>
       </view>
     </view>
 
@@ -125,9 +130,21 @@
     <view class="footer">
       <view class="footer__title">联系我</view>
 
-      <view class="footer__row" bindtap="onCopyWechat">
+      <view class="footer__row" bindtap="onShowWechatQr">
         <text class="footer__row-label">微信</text>
         <text class="footer__row-value">{{profile.wechat}}</text>
+      </view>
+
+      <!-- 个人微信没有可编程的名片接口，只能靠长按识别二维码跳加好友页 -->
+      <view class="qr" wx:if="{{wechatQr}}">
+        <image
+          class="qr__img"
+          src="{{wechatQr.thumb}}"
+          mode="widthFix"
+          show-menu-by-longpress
+          bindtap="onShowWechatQr"
+        />
+        <view class="qr__hint">长按识别 · 点击放大</view>
       </view>
 
       <view class="footer__row" bindtap="onCall">

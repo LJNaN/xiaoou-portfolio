@@ -24,7 +24,7 @@ miniprogram/          小程序源码（不进服务器，只在本地/开发者
 server/
   app/                FastAPI：content 清单 + 原图 + 惰性生成缩略图
   content/            简历与画册清单（进 git，改这里就能改线上文案）
-  images/full/        19 张原图 —— **不进 git**，服务器上那份是唯一一份
+  images/full/        19 张作品原图 + 微信二维码 —— **不进 git**，服务器上那份是唯一一份
   images/thumb/       缩略图缓存 —— 不进 git，服务端自动生成
 tools/upload-images.sh  把本机原图 rsync 到服务器（CI 不管图）
 docker-compose.yml    后端容器，挂进 gateway 的外部网络 web，别名 xiaoou-api
@@ -62,6 +62,12 @@ curl -s http://127.0.0.1:5003/portfolio-api/health
 CI 在 push `main` 后自动跑：rsync 到 `/app/xiaoou-portfolio` →
 `docker compose up -d --build`。用同一套 secrets（`SERVER_SSH_KEY` / `SERVER_HOST` / `SERVER_USER`）。
 
+域名 `www.jnnnn.top` 的 ICP 备案**已通过**，小程序后台的 **request 合法域名** 和
+**downloadFile 合法域名**（后者是「保存到相册」要用的）也**都已加好**，所以
+`config/index.js` 里 `ENV = 'prod'` 就是对的，**不用改任何代码**。
+白名单是精确匹配，`www.` 不能省也不能多。
+两条历史入口 —— `www.liujn.fun` 和裸 IP 直连 —— 都已退役，**别再加回来**。
+
 ### 首次部署（顺序不能反）
 
 **第 0 步必须手动做，否则接口正常但图片全 404：**
@@ -82,6 +88,7 @@ SERVER_USER=root SERVER_HOST=<服务器IP> sh tools/upload-images.sh
 |---|---|
 | 文案、联系方式、作品标题 | 改 `server/content/*.json` → push `main`（**不用传图、不用重建镜像**：容器每次请求都重读 JSON） |
 | 换 / 加一张作品图 | 见下 |
+| 换微信二维码 | 覆盖 `server/images/full/qrCode.jpg`（文件名不变也行，`?v=` 会跟着变）→ `sh tools/upload-images.sh` |
 | 改样式、交互 | 改 `miniprogram/` → 开发者工具上传新版本 → 提交审核发版 |
 
 ### 加一张新作品图（两步）
@@ -106,17 +113,12 @@ tar czf /root/migrate/xiaoou-images.tgz -C /app/xiaoou-portfolio server/images/f
 正因如此，`.github/workflows/deploy.yml` 里的 rsync **必须带 `--exclude='server/images'`**：
 rsync 不会删除被 exclude 的路径，一旦漏写，下一次部署的 `--delete` 会把服务器上的原图全部删掉。
 
-## 还没做的（需要你提供）
+## 已知限制
 
-- **域名 ICP 备案**：`www.jnnnn.top` 备案没下来之前，**真机一定连不上** ——
-  阿里云会按 SNI 把带域名的连接直接重置（`ERR_CONNECTION_RESET`），
-  `http://` 则返回 `Non-compliance ICP Filing` 的 403 页。这不是代码问题：
-  同一个 IP 不带 SNI 访问端口 443 是 200。备案通过后无需改任何代码。
-  等待期间真机调试把 `config/index.js` 的 `ENV` 改成 `'ip'`（裸 IP 直连）并勾「不校验合法域名」。
-- **服务器域名白名单**：小程序后台「开发 → 开发设置 → 服务器域名」，
-  把 `https://www.jnnnn.top` 加进 **request 合法域名** 和 **downloadFile 合法域名**
-  （后者是「保存到相册」要用的）。白名单是精确匹配，`www.` 不能省也不能多。
-- **微信号名片**：按你的要求先不做了，页面上只留一个「复制微信」按钮。
+- **微信号名片**：个人微信没有可编程的名片接口，「点一下直接加好友」做不了，这是微信有意封的。
+  页面改成在「联系我」里直接摆二维码（`server/images/full/qrCode.jpg`）：长按 →「识别图中二维码」
+  跳加好友页，点一下是放大预览（`wx.previewImage`），在那里长按同样能识别。
+  **能不能识别必须真机验一遍** —— 微信对小程序内识别个人微信码时有收紧，开发者工具里的表现不算数。
 
 ## 排错
 

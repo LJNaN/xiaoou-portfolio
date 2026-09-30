@@ -34,6 +34,7 @@ Page({
     profile: {},
     cover: null,
     resume: null,
+    wechatQr: null,
     blocks: [],
     previewUrls: [],
   },
@@ -125,6 +126,10 @@ Page({
       ? { thumb: url(resumeRaw.thumb), full: url(resumeRaw.full), boxH: boxHeight(resumeRaw) }
       : null;
 
+    // 微信二维码单独放大预览，不并进 previewUrls —— 那本是封面→简历→画册的连播顺序
+    const qrRaw = content.wechatQr && !content.wechatQr.missing ? content.wechatQr : null;
+    const wechatQr = qrRaw ? { thumb: url(qrRaw.thumb), full: url(qrRaw.full) } : null;
+
     // 放大预览的顺序跟页面里看到的一致：封面 → 简历 → 画册 02…18，
     // 传全了就能左右滑连续看完整本
     const previewUrls = [];
@@ -134,7 +139,7 @@ Page({
       if (page.role !== 'cover') previewUrls.push(url(page.full));
     });
 
-    this.setData({ ready: true, error: false, profile, cover, resume, blocks, previewUrls });
+    this.setData({ ready: true, error: false, profile, cover, resume, wechatQr, blocks, previewUrls });
     wx.nextTick(() => this.measure());
   },
 
@@ -182,13 +187,32 @@ Page({
   },
 
   onCopyEmail() {
-    const data = this.data.profile.email;
-    if (data) wx.setClipboardData({ data });
+    this.copyText(this.data.profile.email, '邮箱');
   },
 
-  onCopyWechat() {
-    const data = this.data.profile.wechat;
-    if (data) wx.setClipboardData({ data });
+  // 放大二维码，让用户长按「识别图中二维码」跳到加好友页。
+  // 二维码拿不到时（图没传上服务器、或清单还没部署）退回复制微信号，
+  // 别让按钮点了完全没反应。
+  onShowWechatQr() {
+    const qr = this.data.wechatQr;
+    if (qr) {
+      wx.previewImage({ urls: [qr.full], current: qr.full, showmenu: true });
+      return;
+    }
+    this.copyText(this.data.profile.wechat, '微信号');
+  },
+
+  // setClipboardData 自己会弹一句「内容已复制」，先收掉再弹具体的那句，
+  // 不然「复制了什么」要用户自己猜。
+  copyText(text, label) {
+    if (!text) return;
+    wx.setClipboardData({
+      data: text,
+      success() {
+        wx.hideToast();
+        wx.showToast({ title: `${label}已复制`, icon: 'none' });
+      },
+    });
   },
 
   onBackTop() {
