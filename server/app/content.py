@@ -74,8 +74,7 @@ def missing_files() -> list[str]:
     gallery = _read_json(CONTENT_DIR / "gallery.json", {})
     profile = _read_json(CONTENT_DIR / "profile.json", {})
     names = [page["file"] for page in gallery.get("pages", [])]
-    if profile.get("resumeImage"):
-        names.append(profile["resumeImage"])
+    names += [p for p in (profile.get("resumeImage"), profile.get("wechatQr")) if p]
     return [name for name in names if not (FULL_DIR / name).is_file()]
 
 
@@ -100,10 +99,14 @@ def build() -> dict:
     resume_name = profile.pop("resumeImage", None)
     resume = _describe(resume_name, suffix) if resume_name else None
 
+    qr_name = profile.pop("wechatQr", None)
+    wechat_qr = _describe(qr_name, suffix) if qr_name else None
+
     return {
         "version": suffix.removeprefix("?v="),
         "profile": profile,
         "categories": gallery.get("categories", []),
         "pages": pages,
         "resume": resume,
+        "wechatQr": wechat_qr,
     }
