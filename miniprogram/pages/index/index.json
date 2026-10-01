@@ -2,5 +2,7 @@
   "usingComponents": {},
   "navigationStyle": "custom",
   "backgroundColor": "#FFFFFF",
-  "enablePullDownRefresh": false
+  "enablePullDownRefresh": false,
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true
 }

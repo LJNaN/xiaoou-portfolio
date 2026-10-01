@@ -35,6 +35,7 @@ Page({
     cover: null,
     resume: null,
     wechatQr: null,
+    shareImage: null,
     blocks: [],
     previewUrls: [],
   },
@@ -130,6 +131,10 @@ Page({
     const qrRaw = content.wechatQr && !content.wechatQr.missing ? content.wechatQr : null;
     const wechatQr = qrRaw ? { thumb: url(qrRaw.thumb), full: url(qrRaw.full) } : null;
 
+    // 分享卡片用专用图（封面未拉伸的原始比例版），不跟封面那张「垫到状态栏」的拉伸图混用
+    const shareRaw = content.shareImage && !content.shareImage.missing ? content.shareImage : null;
+    const shareImage = shareRaw ? { full: url(shareRaw.full) } : null;
+
     // 放大预览的顺序跟页面里看到的一致：封面 → 简历 → 画册 02…18，
     // 传全了就能左右滑连续看完整本
     const previewUrls = [];
@@ -139,7 +144,17 @@ Page({
       if (page.role !== 'cover') previewUrls.push(url(page.full));
     });
 
-    this.setData({ ready: true, error: false, profile, cover, resume, wechatQr, blocks, previewUrls });
+    this.setData({
+      ready: true,
+      error: false,
+      profile,
+      cover,
+      resume,
+      wechatQr,
+      shareImage,
+      blocks,
+      previewUrls,
+    });
     wx.nextTick(() => this.measure());
   },
 
@@ -225,18 +240,18 @@ Page({
   },
 
   onShareAppMessage() {
-    const { profile, cover } = this.data;
+    const { profile, cover, shareImage } = this.data;
     return {
       title: `${profile.name} · ${profile.title}｜作品集`,
       path: '/pages/index/index',
-      imageUrl: cover ? cover.thumb : '',
+      imageUrl: shareImage ? shareImage.full : cover ? cover.thumb : '',
     };
   },
 
   onShareTimeline() {
-    const { profile } = this.data;
-    return {
-      title: `${profile.name} · ${profile.title}｜平面设计作品集`,
-    };
+    const { profile, shareImage } = this.data;
+    const res = { title: `${profile.name} · ${profile.title}｜平面设计作品集` };
+    if (shareImage) res.imageUrl = shareImage.full;
+    return res;
   },
 });
